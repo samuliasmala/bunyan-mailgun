@@ -1,0 +1,35 @@
+{
+  "dependencies": {
+    "mailgun-js": ">=0.7.7"
+  },
+  "devDependencies": {
+    "mocha": "^2.4.4",
+    "should": "^8.2.1"
+  },
+  "description": "Send bunyan log record to mailgun",
+  "directories": {},
+  "keywords": [
+    "bunyan",
+    "email",
+    "stream",
+    "mailgun"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "elseblock",
+      "email": "jzumbrun@gmail.com"
+    }
+  ],
+  "name": "bunyan-mailgun",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jzumbrun/mailgun.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "version": "0.0.1",
+  "engines" : { "node" : ">=5.0" }
+}
