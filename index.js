@@ -41,19 +41,26 @@ class BunyanMailgun extends Stream {
      * Format Body
      */
     _formatBody(log) {
+        const includeFields = ['name', 'hostname', 'pid', 'time', 'msg', 'err'];
+        const excludeFields = ['level', 'v'];
         var rows = [];
-        rows.push('* name: ' + log.name);
-        rows.push('* hostname: ' + log.hostname);
-        rows.push('* pid: ' + log.pid);
-        rows.push('* time: ' + log.time);
 
-        if (log.msg) {
-            rows.push('* msg: \n' + log.msg);
-        }
+        // Include defined fields
+        includeFields.forEach(field => {
+            if (log[field]) {
+                var msg = log[field];
+                // Error is a special case when only stack is included
+                if (field === 'err') msg = msg.stack;
+                rows.push(`* ${field}: ${msg}`);
+            }
+        });
 
-        if (log.err) {
-            rows.push('* err.stack: ' + log.err.stack);
-        }
+        // Add rest of the log object except excluded fields after newline
+        rows.push('\n');
+        Object.keys(log).forEach(field => {
+            if (!includeFields.includes(field) && !excludeFields.includes(field))
+                rows.push(`* ${field}: ${log[field]}`);
+        });
 
         return rows.join('\n');
     }
