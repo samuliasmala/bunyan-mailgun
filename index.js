@@ -55,11 +55,14 @@ class BunyanMailgun extends Stream {
             }
         });
 
-        // Add rest of the log object except excluded fields after newline
-        rows.push('\n');
+        // Add rest of the log object after newline (except excluded fields)
+        rows.push('');
         Object.keys(log).forEach(field => {
-            if (!includeFields.includes(field) && !excludeFields.includes(field))
-                rows.push(`* ${field}: ${log[field]}`);
+            if (!includeFields.includes(field) && !excludeFields.includes(field)) {
+                let val = log[field];
+                if (typeof val === "object") val = JSON.stringify(val, null, 2);
+                rows.push(`* ${field}: ${val}`);
+            }
         });
 
         return rows.join('\n');
