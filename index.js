@@ -2,7 +2,8 @@
 const util = require('util'),
     extend = util._extend,
     Stream = require('stream').Writable,
-    Mailgun = require('mailgun-js'),
+    Mailgun = require('mailgun.js'),
+    formData = require('form-data'),
     Levels = {
         10: 'TRACE',
         20: 'DEBUG',
@@ -18,9 +19,11 @@ class BunyanMailgun extends Stream {
         super()
 
         this.config = config
-        this.mailgun = new Mailgun({
-            apiKey: this.config.key,
-            domain: this.config.domain
+        this.mg = new Mailgun(formData);
+        this.mailgun = this.mg.client({
+            username: 'api',
+            key: this.config.key,
+            url: this.config.server
         })
     }
 
@@ -73,20 +76,15 @@ class BunyanMailgun extends Stream {
      */
     write(log) {
 
-        this.mailgun.messages().send({
+        this.mailgun.messages.create(this.config.domain, {
             from: this.config.from,
             to: this.config.to,
             subject: this._formatSubject(log),
             text: this._formatBody(log)
-        }, (error, body) => {
-            if (error) {
-                this.emit('error', error)
-            }else{
-                this.emit('sent', body)
-            }
         })
+            .then(body => this.emit('sent', body))
+            .catch(error => this.emit('error', error));
     }
-
 }
 
 
